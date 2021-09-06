@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+func compareTwoString(s string, t string) bool {
+	return s==t;
+}
+
 func main() {
 	count := flag.Bool("c", false, "Count repeating strings?");
 	deleteUnrepeated := flag.Bool("d", false, "Delete repeating strings?");
@@ -32,8 +36,10 @@ func main() {
             log.Fatal(err)
         }
     }()
-
-
+	stringComparator := compareTwoString;
+	if *caseInsensitive {
+		stringComparator = strings.EqualFold;
+	}
     buf := make([]byte, 32*1024) 
 
     for {
@@ -44,23 +50,15 @@ func main() {
 			previous := "";
 			var counter int;
 			for i := *ignoreFirst; i < (len(s)-*ignoreEnd); i++ {
-				if !*caseInsensitive {
-					if previous!=s[i] {
-						if *count {
-							fmt.Printf("%d ", counter);
-							counter = 0;
-						} else {
-							fmt.Println(s[i]);
-						}
-					} else {
-						counter++;
+				if !stringComparator(previous, s[i]) { 
+					if *count {
+						fmt.Printf("%d ", counter);
+						counter=0;
 					}
-				} else {
-					if !strings.EqualFold(previous, s[i]) {
-						fmt.Println(s[i]);
-					} else {
-						counter++;
-					}
+					fmt.Println(s[i]);
+					counter=0;
+				} else if *count {
+					counter++;
 				}
 				previous = s[i];
 			}
