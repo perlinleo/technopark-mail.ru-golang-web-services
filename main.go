@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+
+func subSentence(s string, ignoreStart int, ignoreStartSymbols int) string {
+	current := s[ignoreStartSymbols:];
+	
+	words := strings.Fields(current);
+	
+	if(len(words)>0) {
+	 	current = strings.Join(words[ignoreStart:]," ");
+	}
+	return current; 
+}
+
 func compareTwoString(s string, t string) bool {
 	return s==t;
 }
@@ -19,7 +31,7 @@ func main() {
 	unique := flag.Bool("u", false, "Show unrepeated strings only?");
 	caseInsensitive := flag.Bool("i", false, "case-insensitive");
 	ignoreFirst := flag.Int("f", 0, "Ignore first {num} lines");
-	ignoreEnd := flag.Int("s",0, "Ignore last {num} lines");
+	ignoreStartSymbols := flag.Int("s",0, "Ignore last {num} lines");
 
 	flag.Parse();
 
@@ -47,20 +59,27 @@ func main() {
 
         if n > 0 {
             s := strings.Split(string(buf[:n]),"\n")
-			previous := "";
+			previous := subSentence(s[0],*ignoreFirst,*ignoreStartSymbols);
 			var counter int;
-			for i := *ignoreFirst; i < (len(s)-*ignoreEnd); i++ {
-				if !stringComparator(previous, s[i]) { 
+			for i := 1; i < len(s); i++ {
+				current := subSentence(s[i],*ignoreFirst,*ignoreStartSymbols);
+				// fmt.Println(current);
+				if !stringComparator(previous, current) { 
 					if *count {
-						fmt.Printf("%d ", counter);
+						fmt.Printf("%d ", counter+1);
 						counter=0;
 					}
-					fmt.Println(s[i]);
-					counter=0;
+					fmt.Println(s[i-1]);
+					
 				} else if *count {
 					counter++;
 				}
-				previous = s[i];
+				previous = current;
+			}
+			if(*count) { 
+				fmt.Printf("%d %s", counter+1, s[len(s)-1])
+			} else {
+				fmt.Println(s[len(s)-1]);
 			}
         }
 
