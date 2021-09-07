@@ -31,6 +31,7 @@ func uniq(text []string,
 		   caseInsensitive bool,
 		   ignoreFirst int,
 		   ignoreStartSymbols int) string {
+			var result string;
 			stringComparator := compareTwoString;
 			if caseInsensitive {
 				stringComparator = strings.EqualFold;
@@ -42,22 +43,22 @@ func uniq(text []string,
 				// fmt.Println(current);
 				if !stringComparator(previous, current) { 
 					if count {
-						fmt.Printf("%d ", counter+1);
+						result += fmt.Sprintf("%d ", counter+1);
 						counter=0;
 					}
-					fmt.Println(text[i-1]);
-					
+					result += fmt.Sprintf("%s\n", text[i-1]);
 				} else if count {
 					counter++;
 				}
 				previous = current;
 			}
 			if(count) { 
-				fmt.Printf("%d ", counter+1)
+				result+= fmt.Sprintf("%d ", counter+1);
+				// fmt.Printf("%d ", counter+1)
 			} 
-			fmt.Println(text[len(text)-1]);
+			result += fmt.Sprintf("%s\n", text[len(text)-1]);
 
-			return "";
+			return result;
 		   }
 
 func main() {
@@ -91,7 +92,7 @@ func main() {
 
         if n > 0 {
 			s := strings.Split(string(buf[:n]),"\n")
-            uniq(s,*count,*deleteUnrepeated,*caseInsensitive,*ignoreFirst,*ignoreStartSymbols);
+            fmt.Printf("%s", uniq(s,*count,*deleteUnrepeated,*caseInsensitive,*ignoreFirst,*ignoreStartSymbols));
         }
 
         if err == io.EOF {
