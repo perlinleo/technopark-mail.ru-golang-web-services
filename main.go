@@ -25,7 +25,7 @@ func compareTwoString(s string, t string) bool {
 	return s==t;
 }
 
-func uniq(text []string,
+func Uniq(text []string,
 		   count bool,
 		   deleteUnrepeated bool,
 		   caseInsensitive bool,
@@ -92,7 +92,7 @@ func main() {
 
         if n > 0 {
 			s := strings.Split(string(buf[:n]),"\n")
-            fmt.Printf("%s", uniq(s,*count,*deleteUnrepeated,*caseInsensitive,*ignoreFirst,*ignoreStartSymbols));
+            fmt.Printf("%s", Uniq(s,*count,*deleteUnrepeated,*caseInsensitive,*ignoreFirst,*ignoreStartSymbols));
         }
 
         if err == io.EOF {
