@@ -90,7 +90,19 @@ func main() {
 	if *outputFile=="" {
 		fmt.Printf("%s",output);
 	} else {
+		f, err := os.Create(*outputFile)
 
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		defer f.Close()
+
+		_, err2 := f.WriteString(output)
+
+		if err2 != nil {
+			log.Fatal(err2)
+		}
 	}
 
 }
