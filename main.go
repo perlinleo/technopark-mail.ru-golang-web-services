@@ -82,6 +82,7 @@ func main() {
 
 	output := fmt.Sprintf("%s", src.Uniq(s,*count,
 		*deleteUnrepeated,
+		*unique,
 		*caseInsensitive,
 		*ignoreFirst,
 		*ignoreStartSymbols));

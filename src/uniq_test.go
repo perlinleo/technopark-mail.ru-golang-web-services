@@ -21,7 +21,7 @@ func  TestNoArgs(t *testing.T) {
 		
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,false,false,0,0);
+		got:= Uniq(c.in,false,false,false,false,0,0);
 		if got != c.want {
 			t.Errorf("ReverseRunes(%q) == %q, want %q", c.in,got, c.want)
 		}
@@ -47,7 +47,7 @@ func  TestCount(t *testing.T) {
 		
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,true,false,false,0,0);
+		got:= Uniq(c.in,true,false,false,false,0,0);
 		if got != c.want {
 			t.Errorf("ReverseRunes(%q) == %q, want %q", c.in,got, c.want)
 		}
@@ -73,7 +73,7 @@ func  TestDelete(t *testing.T) {
 			"3 I love music.\n1  \n2 I love music of Kartik.\n1 Thanks\n2 I love music of Kartik.\n"},
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,true,false,0,0);
+		got:= Uniq(c.in,false,true,false,false,0,0);
 		if got != c.want {
 			t.Errorf("ReverseRunes(%q) == %q, want %q", c.in,got, c.want)
 		}

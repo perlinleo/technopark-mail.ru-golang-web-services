@@ -1,4 +1,4 @@
 build/
 #build folder
-*.txt
+Input.txt
 #input sample
