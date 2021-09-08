@@ -1,65 +1,16 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"strings"
+	"uniq/src"
 )
 
-
-func subSentence(s string, ignoreStart int, ignoreStartSymbols int) string {
-	current := s[ignoreStartSymbols:];
-	
-	words := strings.Fields(current);
-	
-	if(len(words)>0) {
-	 	current = strings.Join(words[ignoreStart:]," ");
-	}
-	return current; 
-}
-
-func compareTwoString(s string, t string) bool {
-	return s==t;
-}
-
-func Uniq(text []string,
-		   count bool,
-		   deleteUnrepeated bool,
-		   caseInsensitive bool,
-		   ignoreFirst int,
-		   ignoreStartSymbols int) string {
-			var result string;
-			stringComparator := compareTwoString;
-			if caseInsensitive {
-				stringComparator = strings.EqualFold;
-			}
-			previous := subSentence(text[0],ignoreFirst,ignoreStartSymbols);
-			var counter int;
-			for i := 1; i < len(text); i++ {
-				current := subSentence(text[i],ignoreFirst,ignoreStartSymbols);
-				// fmt.Println(current);
-				if !stringComparator(previous, current) { 
-					if count {
-						result += fmt.Sprintf("%d ", counter+1);
-						counter=0;
-					}
-					result += fmt.Sprintf("%s\n", text[i-1]);
-				} else if count {
-					counter++;
-				}
-				previous = current;
-			}
-			if(count) { 
-				result+= fmt.Sprintf("%d ", counter+1);
-				// fmt.Printf("%d ", counter+1)
-			} 
-			result += fmt.Sprintf("%s\n", text[len(text)-1]);
-
-			return result;
-		   }
 
 func main() {
 	count := flag.Bool("c", false, "Count repeating strings?");
@@ -68,6 +19,8 @@ func main() {
 	caseInsensitive := flag.Bool("i", false, "case-insensitive");
 	ignoreFirst := flag.Int("f", 0, "Ignore first {num} lines");
 	ignoreStartSymbols := flag.Int("s",0, "Ignore last {num} lines");
+	inputFile := flag.String("input_file", "", "File to read");
+	outputFile := flag.String("output_file", "", "File to write");
 
 	flag.Parse();
 
@@ -75,33 +28,68 @@ func main() {
 	if *count && (*deleteUnrepeated || *unique) || (*deleteUnrepeated && *unique) {
 		log.Fatal("Can`t use -c,-d,-u together");
 	}
-    file, err := os.Open("Input.txt")
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer func() {
-        if err = file.Close(); err != nil {
-            log.Fatal(err)
-        }
-    }()
-	
-    buf := make([]byte, 32*1024) 
 
-    for {
-        n, err := file.Read(buf)
+	var s []string;
 
-        if n > 0 {
-			s := strings.Split(string(buf[:n]),"\n")
-            fmt.Printf("%s", Uniq(s,*count,*deleteUnrepeated,*caseInsensitive,*ignoreFirst,*ignoreStartSymbols));
-        }
+	if *inputFile != "" { 
+		file, err := os.Open(*inputFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func() {
+			if err = file.Close(); err != nil {
+				log.Fatal(err)
+			}
+		}()
+		
+		buf := make([]byte, 32*1024) 
+		
+		for {
+			n, err := file.Read(buf)
 
-        if err == io.EOF {
-            break
-        }
-        if err != nil {
-            log.Printf("read %d bytes: %v", n, err)
-            break
-        }
-    }
+			if n > 0 {
+				s = strings.Split(string(buf[:n]),"\n")
+			}
+
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Printf("read %d bytes: %v", n, err)
+				break
+			}
+		}
+	} else {
+		reader:= bufio.NewReader(os.Stdin)
+		for {
+			fmt.Print("-->");
+			line, err := reader.ReadString('\n');
+			line = strings.TrimSuffix(line,"\n");
+			
+			if line == "END" {
+				break;
+			}
+
+			
+			if(err != nil) {
+				log.Fatal(err);
+			}
+
+			s = append(s, line);
+
+		}
+	}
+
+	output := fmt.Sprintf("%s", src.Uniq(s,*count,
+		*deleteUnrepeated,
+		*caseInsensitive,
+		*ignoreFirst,
+		*ignoreStartSymbols));
+
+	if *outputFile=="" {
+		fmt.Printf("%s",output);
+	} else {
+
+	}
 
 }
