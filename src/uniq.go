@@ -6,6 +6,10 @@ import (
 )
 
 func subSentence(s string, ignoreStart int, ignoreStartSymbols int) string {
+
+	if(ignoreStartSymbols>=len(s)) {
+		return s;
+	}
 	current := s[ignoreStartSymbols:];
 	
 	words := strings.Fields(current);
@@ -13,6 +17,7 @@ func subSentence(s string, ignoreStart int, ignoreStartSymbols int) string {
 	if(len(words)>0) {
 	 	current = strings.Join(words[ignoreStart:]," ");
 	}
+	
 	return current; 
 }
 
