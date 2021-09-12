@@ -1,0 +1,9 @@
+build/
+#build folder
+Input.txt
+#input sample
+Output.txt
+go.sum
+
+#Coverage
+coverage.out.tmp

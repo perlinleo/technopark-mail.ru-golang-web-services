@@ -1,4 +1,4 @@
-package src
+package uniq
 
 import (
 	"fmt"

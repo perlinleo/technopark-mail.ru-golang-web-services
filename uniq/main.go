@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"myuniq/uniq"
 	"os"
 	"strings"
-	"uniq/src"
 )
 
 
@@ -80,7 +80,7 @@ func main() {
 		}
 	}
 
-	output := fmt.Sprintf("%s", src.Uniq(s,*count,
+	output := fmt.Sprintf("%s", uniq.Uniq(s,*count,
 		*deleteUnrepeated,
 		*unique,
 		*caseInsensitive,
