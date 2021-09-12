@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// Возвращает подстроку без заданного количества начальных символов
+// либо без определенного количества первых слов в строке
 func subSentence(s string, ignoreStart int, ignoreStartSymbols int) string {
 
 	if(ignoreStartSymbols>=len(s)) {
@@ -20,11 +22,18 @@ func subSentence(s string, ignoreStart int, ignoreStartSymbols int) string {
 	
 	return current; 
 }
-
-func compareTwoString(s string, t string) bool {
+ 
+// Сравнивает две строки и возвращает true, если они
+// одинаковые (Необходимо для того,чтобы обычная функция сравнения
+// была совместима с strings.EqualFold и ее можно было поместить в
+// StringComparator uniq.go 43 строка) ,что спасает от огомного числа if-ов
+func compareTwoStrings(s string, t string) bool {
 	return s==t;
 }
 
+
+// Находит уникальные/неуникальные строки по параметрам из
+// массива строк и возвращает строку
 func Uniq(text []string,
 		   count bool,
 		   deleteUnrepeated bool,
@@ -33,60 +42,47 @@ func Uniq(text []string,
 		   ignoreFirst int,
 		   ignoreStartSymbols int) string {
 			var result string;
-			stringComparator := compareTwoString;
+			
+			stringComparator := compareTwoStrings;
 			
 			if caseInsensitive {
 				stringComparator = strings.EqualFold;
 			}
 			
-			if deleteUnrepeated || unique {
-				count = true;
-			}
-		
-
+			text = append(text, "\n");
 			previous := subSentence(text[0],ignoreFirst,ignoreStartSymbols);
+			
 			var counter int;
+
 			for i := 1; i < len(text); i++ {
 				current := subSentence(text[i],ignoreFirst,ignoreStartSymbols);
-				// fmt.Println(current);
+				
 				if !stringComparator(previous, current) { 
-					if count && !(unique || deleteUnrepeated) {
+					if count {
 						result += fmt.Sprintf("%d ", counter+1);
 						counter=0;
 					}
 					if !(unique || deleteUnrepeated) { 
 						result += fmt.Sprintf("%s\n", text[i-1]);
-					} else if unique {
-						if(counter==0){
+					} else {
+						if(counter==0 && unique){
 							result += fmt.Sprintf("%s\n", text[i-1]);
 						}
-						counter = 0;
-					} else if deleteUnrepeated {
-						// fmt.Printf("word %s added (counter: %d)", text[i-1], counter);
-						if (counter>0){
+						if (counter>0 && deleteUnrepeated){
 							result += fmt.Sprintf("%s\n", text[i-1]);
 						}
 						counter = 0;
 					}
-				} else if count {
+				} else {
 					counter++;
 				}
 				previous = current;
 			}
-			if(count) && !(unique || deleteUnrepeated) { 
-				result+= fmt.Sprintf("%d ", counter+1);
-				result += fmt.Sprintf("%s\n", text[len(text)-1]);
-				// fmt.Printf("%d ", counter+1)
-			} else if unique {
-				if(counter==0){
-					result += fmt.Sprintf("%s\n", text[len(text)-1]);
-				}
-			} else if deleteUnrepeated {
-				if(counter>0) {
-					result += fmt.Sprintf("%s\n", text[len(text)-1])
-				}
-			} else {
-				result += fmt.Sprintf("%s\n", text[len(text)-1]);
-			}
+
 			return result;
-		   }
+}
+
+// Проверка совместимости флагов
+func СheckParams(count , deleteUnrepeated, unique bool) (bool) {
+	return count && (deleteUnrepeated || unique) || (deleteUnrepeated && unique)
+}

@@ -24,8 +24,8 @@ func main() {
 
 	flag.Parse();
 
-	// Проверка на то,что более одного из флагов -c -d -u - true
-	if *count && (*deleteUnrepeated || *unique) || (*deleteUnrepeated && *unique) {
+	
+	if uniq.СheckParams(*count, *deleteUnrepeated, *unique) {
 		log.Fatal("Can`t use -c,-d,-u together");
 	}
 
