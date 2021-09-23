@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -13,26 +12,12 @@ import (
 
 
 func main() {
-	count := flag.Bool("c", false, "Count repeating strings?");
-	deleteUnrepeated := flag.Bool("d", false, "Delete repeating strings?");
-	unique := flag.Bool("u", false, "Show unrepeated strings only?");
-	caseInsensitive := flag.Bool("i", false, "case-insensitive");
-	ignoreFirst := flag.Int("f", 0, "Ignore first {num} lines");
-	ignoreStartSymbols := flag.Int("s",0, "Ignore last {num} lines");
-	inputFile := flag.String("input_file", "", "File to read");
-	outputFile := flag.String("output_file", "", "File to write");
-
-	flag.Parse();
-
-	
-	if uniq.СheckParams(*count, *deleteUnrepeated, *unique) {
-		log.Fatal("Can`t use -c,-d,-u together");
-	}
+	parsedParams:= uniq.ParseParams();
 
 	var s []string;
 
-	if *inputFile != "" { 
-		file, err := os.Open(*inputFile)
+	if parsedParams.InputFile != "" { 
+		file, err := os.Open(parsedParams.InputFile)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -80,17 +65,12 @@ func main() {
 		}
 	}
 
-	output := fmt.Sprintf("%s", uniq.Uniq(s,*count,
-		*deleteUnrepeated,
-		*unique,
-		*caseInsensitive,
-		*ignoreFirst,
-		*ignoreStartSymbols));
+	output := fmt.Sprintf("%s", uniq.Uniq(s,parsedParams));
 
-	if *outputFile=="" {
+	if parsedParams.OutputFile=="" {
 		fmt.Printf("%s",output);
 	} else {
-		f, err := os.Create(*outputFile)
+		f, err := os.Create(parsedParams.OutputFile)
 
 		if err != nil {
 			log.Fatal(err)

@@ -17,7 +17,8 @@ func main() {
 
 	result, err := c.Calc(expr)
 	if err!=nil{
-		panic(err)
+		fmt.Println("Error: ",err);
+		return;
 	}
 	fmt.Println(result);
 	

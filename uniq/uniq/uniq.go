@@ -1,7 +1,9 @@
 package uniq
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -32,43 +34,75 @@ func compareTwoStrings(s string, t string) bool {
 }
 
 
+type Params struct {
+	Count bool;
+	DeleteUnrepeated bool;
+	Unique bool;
+	CaseInsensitive bool;
+	IgnoreFirst int;
+	IgnoreStartSymbols int;
+	InputFile string;
+	OutputFile string;
+}
+
+
+// Разбирает параметры и складывает в структуру с параметрами
+func ParseParams() Params {
+	count := flag.Bool("c", false, "Count repeating strings?");
+	deleteUnrepeated := flag.Bool("d", false, "Delete repeating strings?");
+	unique := flag.Bool("u", false, "Show unrepeated strings only?");
+	caseInsensitive := flag.Bool("i", false, "case-insensitive");
+	ignoreFirst := flag.Int("f", 0, "Ignore first {num} lines");
+	ignoreStartSymbols := flag.Int("s",0, "Ignore last {num} lines");
+	inputFile := flag.String("input_file", "", "File to read");
+	outputFile := flag.String("output_file", "", "File to write");
+	flag.Parse();
+	if СheckParams(*count, *deleteUnrepeated, *unique) {
+		log.Fatal("Can`t use -c,-d,-u together");
+	}
+	return Params{
+		*count,
+		*deleteUnrepeated,
+		*unique,
+		*caseInsensitive,
+		*ignoreFirst,
+		*ignoreStartSymbols,
+		*inputFile,
+		*outputFile,
+	}
+}
+
+
 // Находит уникальные/неуникальные строки по параметрам из
 // массива строк и возвращает строку
-func Uniq(text []string,
-		   count bool,
-		   deleteUnrepeated bool,
-		   unique bool,
-		   caseInsensitive bool,
-		   ignoreFirst int,
-		   ignoreStartSymbols int) string {
-			var result string;
+func Uniq(text []string,parsedParams Params) string {var result string;
 			
 			stringComparator := compareTwoStrings;
 			
-			if caseInsensitive {
+			if parsedParams.CaseInsensitive {
 				stringComparator = strings.EqualFold;
 			}
 			
 			text = append(text, "\n");
-			previous := subSentence(text[0],ignoreFirst,ignoreStartSymbols);
+			previous := subSentence(text[0],parsedParams.IgnoreFirst,parsedParams.IgnoreStartSymbols);
 			
 			var counter int;
 
 			for i := 1; i < len(text); i++ {
-				current := subSentence(text[i],ignoreFirst,ignoreStartSymbols);
+				current := subSentence(text[i],parsedParams.IgnoreFirst,parsedParams.IgnoreStartSymbols);
 				
 				if !stringComparator(previous, current) { 
-					if count {
+					if parsedParams.Count {
 						result += fmt.Sprintf("%d ", counter+1);
 						counter=0;
 					}
-					if !(unique || deleteUnrepeated) { 
+					if !(parsedParams.Unique || parsedParams.DeleteUnrepeated) { 
 						result += fmt.Sprintf("%s\n", text[i-1]);
 					} else {
-						if(counter==0 && unique){
+						if(counter==0 && parsedParams.Unique){
 							result += fmt.Sprintf("%s\n", text[i-1]);
 						}
-						if (counter>0 && deleteUnrepeated){
+						if (counter>0 && parsedParams.DeleteUnrepeated){
 							result += fmt.Sprintf("%s\n", text[i-1]);
 						}
 						counter = 0;

@@ -5,6 +5,7 @@ import (
 )
 
 func  TestNoArgs(t *testing.T) {
+	params:= Params{false,false,false,false,0,0,"",""}
 	cases := []struct {
 		in []string
 		want string
@@ -20,10 +21,30 @@ func  TestNoArgs(t *testing.T) {
 			"I love music of Kartik.",
 			"I love music of Kartik."}, 
 		"I love music.\n \nI love music of Kartik.\nThanks\nI love music of Kartik.\n"},
+		{
+			[]string{"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			" ",
+			"I love music of Kartik.",
+			"I love music of Kartik.",
+			"Thanks",
+			"I love music of Kartik.",
+			"I love music of Kartik."}, 
+		"I love music.\n \nI love music of Kartik.\nThanks\nI love music of Kartik.\n"},
+		
 		
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,false,false,false,0,0);
+		got:= Uniq(c.in,params);
 		if got != c.want {
 			t.Errorf("uniq(%q) == %q, want %q", c.in,got, c.want)
 		}
@@ -31,6 +52,7 @@ func  TestNoArgs(t *testing.T) {
 }
 
 func  TestCount(t *testing.T) {
+	params:= Params{true,false,false,false,0,0,"",""}
 	cases := []struct {
 		in []string
 		want string
@@ -46,10 +68,21 @@ func  TestCount(t *testing.T) {
 			"I love music of Kartik.",
 			"I love music of Kartik."}, 
 			"3 I love music.\n1  \n2 I love music of Kartik.\n1 Thanks\n2 I love music of Kartik.\n"},
-		
+		{
+			[]string{"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			"I love music.",
+			" ",
+			"I love music of Kartik.",
+			"Thanks",
+			"I love music of Kartik.",
+			"I love music of Kartik."}, 
+			"5 I love music.\n1  \n1 I love music of Kartik.\n1 Thanks\n2 I love music of Kartik.\n"},
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,true,false,false,false,0,0);
+		got:= Uniq(c.in,params);
 		if got != c.want {
 			t.Errorf("uniq(%q) == %q, want %q", c.in,got, c.want)
 		}
@@ -57,6 +90,7 @@ func  TestCount(t *testing.T) {
 }
 
 func  TestDelete(t *testing.T) {
+	params:=Params{false,true,false,false,0,0,"",""}
 	cases := []struct {
 		in []string
 		want string
@@ -73,9 +107,19 @@ func  TestDelete(t *testing.T) {
 					 "I love music of Kartik."},
 
 			"I love music.\nI love music of Kartik.\nI love music of Kartik.\n"},
+			{
+				[]string{"I love music.",
+						 " ",
+						 "I love music of Kartik.",
+						 "I love music of Kartik.",
+						 "Thanks",
+						 "I love music of Kartik.",
+						 "I love music of Kartik."},
+	
+				"I love music of Kartik.\nI love music of Kartik.\n"},
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,true,false,false,0,0);
+		got:= Uniq(c.in,params);
 		if got != c.want {
 			t.Errorf("uniq(%q) == %q, want %q", c.in,got, c.want);
 		}
@@ -83,6 +127,7 @@ func  TestDelete(t *testing.T) {
 }
 
 func  TestUnique(t *testing.T) {
+	params:= Params{false,false,true,false,0,0,"",""}
 	cases := []struct {
 		in []string
 		want string
@@ -99,9 +144,24 @@ func  TestUnique(t *testing.T) {
 					 "I love music of Kartik."},
 
 			" \nThanks\n"},
+			{
+				[]string{"I love music.",
+						 "I love music.",
+						 "I love music.",
+						 " ",
+						 " ",
+						 " ",
+						 " ",
+						 "I love music of Kartik.",
+						 "I love music of Kartik.",
+						 "Thanks",
+						 "I love music of Kartik.",
+						 "I love music of Kartik."},
+	
+				"Thanks\n"},
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,false,true,false,0,0);
+		got:= Uniq(c.in,params);
 		if got != c.want {
 			t.Errorf("uniq(%q) == %q, want %q", c.in,got, c.want);
 		}
@@ -109,6 +169,13 @@ func  TestUnique(t *testing.T) {
 }
 
 func  TestCaseInsesitive(t *testing.T) {
+	params:= Params{false,
+		false,
+		false,
+		true,
+		0,
+		0,"",""}
+	
 	cases := []struct {
 		in []string
 		want string
@@ -124,9 +191,18 @@ func  TestCaseInsesitive(t *testing.T) {
 			"I love musiC of Kartik.",
 			"I love mUsiC of Kartik."}, 
 		"I love MUSIC.\n \nI love MusiC of KarTiK.\nThanks\nI love mUsiC of Kartik.\n"},
+		{
+			[]string{"I love music.",
+			"I love music.",
+			"I love MUSIC.",
+			"I love MUSic.",
+			"I LoVe MUSic.",
+			"I love MUSIC.",
+			" ",}, 
+		"I love MUSIC.\n \n"},
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,false,false,true,0,0);
+		got:= Uniq(c.in,params);
 		if got != c.want {
 			t.Errorf("uniq(%q) == %q, want %q", c.in,got, c.want);
 		}
@@ -135,6 +211,7 @@ func  TestCaseInsesitive(t *testing.T) {
 
 
 func  TestIgnoreWords(t *testing.T) {
+	params:=Params{false,false,false,false,1,0,"",""}
 	cases := []struct {
 		in []string
 		want string
@@ -149,9 +226,17 @@ func  TestIgnoreWords(t *testing.T) {
 			"Thanks",
 			}, 
 		"They love music.\n \nWe love music of Kartik.\nThanks\n"},
+		{
+			[]string{
+			" ",
+			"I love music of Kartik.",
+			"We love music of Kartik.",
+			"Thanks",
+			}, 
+		" \nWe love music of Kartik.\nThanks\n"},
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,false,false,false,1,0);
+		got:= Uniq(c.in,params);
 		if got != c.want {
 			t.Errorf("uniq(%q) == %q, want %q", c.in,got, c.want);
 		}
@@ -159,6 +244,7 @@ func  TestIgnoreWords(t *testing.T) {
 }
 
 func  TestIgnoreSymbols(t *testing.T) {
+	params:=Params{false,false,false,false,0,1,"",""};
 	cases := []struct {
 		in []string
 		want string
@@ -173,9 +259,19 @@ func  TestIgnoreSymbols(t *testing.T) {
 			"Thanks",
 			}, 
 		"C love music.\n \nI love music of Kartik.\nWe love music of Kartik.\nThanks\n"},
+		{
+			[]string{"I love music.",
+			"A love music.",
+			"B love music.",
+			"9 love music.",
+			"C love music.",
+			" ",
+			"Thanks",
+			}, 
+		"C love music.\n \nThanks\n"},
 	}
 	for _, c := range cases {
-		got:= Uniq(c.in,false,false,false,false,0,1);
+		got:= Uniq(c.in,params);
 		if got != c.want {
 			t.Errorf("uniq(%q) == %q, want %q", c.in,got, c.want);
 		}

@@ -23,18 +23,12 @@ var priorityMap = map[string]int {
 func GetTokenStack(expression string) (Stack, error) { 
 	var result Stack;
 	var numberAccum string;
-	var leftBracesAmount int16;
-	var rightBracesAmount int16;
 
-	expression = strings.Join(strings.Fields(expression),"")
-
+	expression = strings.ReplaceAll(expression," ", "");
+	if strings.Count(expression,"(") != strings.Count(expression,")") {
+		return nil, errors.New("Amount of ')' doesn`t match with amount of '('")
+	}
 	for index ,char := range expression {
-		if char==')' {
-			rightBracesAmount++;
-		}
-		if char=='(' {
-			leftBracesAmount++;
-		}
 		if priorityMap[string(char)]>0 {
 			if numberAccum!="" {
 				result.Push(Token{isOperation: false, Value: numberAccum});
@@ -64,9 +58,7 @@ func GetTokenStack(expression string) (Stack, error) {
 			return nil, errors.New(fmt.Sprintf("Unrecognised symbol %c", char));
 		}
 	}
-	if rightBracesAmount!=leftBracesAmount {
-		return nil, errors.New("Amount of ')' doesn`t match with amount of '('")
-	}
+	
 	return result, nil;
 }
 
