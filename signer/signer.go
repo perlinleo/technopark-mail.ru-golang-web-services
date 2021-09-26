@@ -1,12 +1,14 @@
 package main
 
 import (
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 )
+
+
+const waitGroupSize = 6;
 
 func SingleHash(in, out chan interface{}) {
   localWg := &sync.WaitGroup{}
@@ -43,10 +45,10 @@ func MultiHash(in, out chan interface{}) {
     go func(val string, out chan interface{}, wg *sync.WaitGroup) {
       var result string;
     
-      var crc32Results [6]string;
+      var crc32Results [waitGroupSize]string;
       
       crc32Wg := &sync.WaitGroup{}
-      crc32Wg.Add(6)
+      crc32Wg.Add(waitGroupSize)
     
       for i := range crc32Results {
           go asyncCrc32(strconv.Itoa(i)+val, &crc32Results[i], crc32Wg)
@@ -84,7 +86,6 @@ func asyncCrc32(data string, result *string, wg *sync.WaitGroup) {
 }
 
 func ExecutePipeline(jobs ...job) {
-  runtime.GOMAXPROCS(0)
   wg := &sync.WaitGroup{}
   in := make(chan interface{})
   for _, job := range jobs {
