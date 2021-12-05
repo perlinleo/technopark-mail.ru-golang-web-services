@@ -1,0 +1,7 @@
+#build folder
+build/
+
+#coverage
+coverage.out.tmp
+
+go.sum
